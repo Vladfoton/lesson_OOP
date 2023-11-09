@@ -569,6 +569,8 @@ class ReadableTextFile:
         return self.file
 
     def __exit__(self,*args, **kwargs):
+        pass
+
 
 
 
