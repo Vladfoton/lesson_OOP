@@ -83,22 +83,21 @@ class RandomLooper:
 
 '''
 
+
 ###__6.1.20__###
 
 class Peekable:
     def __init__(self, iterable):
         self.iterable = list(iterable)
 
-    def peek(self, default = StopIteration):
+    def peek(self, default=StopIteration):
         try:
             return self.iterable[0]
-        except :
+        except:
             if default != StopIteration:
                 return default
             else:
                 raise StopIteration
-
-
 
     def __iter__(self):
         return self
@@ -108,6 +107,7 @@ class Peekable:
             return self.iterable.pop(0)
         else:
             raise StopIteration
+
 
 ###__6.1.21__###
 
@@ -156,11 +156,12 @@ class LoopTracker:
             self.last_object = self.iterable.pop(0)
             return self.last
 
+
 ###__6.2.10__###
 
 class ReversedSequence:
-    def __init__(self,sequence):
-        if isinstance(sequence,list):
+    def __init__(self, sequence):
+        if isinstance(sequence, list):
             self.sequence = sequence
         else:
             self.sequence = list(sequence)
@@ -169,21 +170,21 @@ class ReversedSequence:
         return len(self.sequence)
 
     def __getitem__(self, item):
-        return self.sequence[len(self) - item-1]
+        return self.sequence[len(self) - item - 1]
 
     def __setitem__(self, item, value):
         self.sequence = self.sequence.extend(value)
 
-
     def __iter__(self):
         yield from reversed(self.sequence)
+
 
 ###__6.2.11__###
 
 class SparseArray:
-    def __init__(self,default):
+    def __init__(self, default):
         self.default = default
-        self.array ={}
+        self.array = {}
 
     def __setitem__(self, key, value):
         self.array[key] = value
@@ -197,8 +198,11 @@ class SparseArray:
     def __len__(self):
         return len(self.array)
 
+
 ###__6.2.12__###
 from copy import copy
+
+
 class CyclicList:
 
     def __init__(self, iterable):
@@ -207,7 +211,7 @@ class CyclicList:
         else:
             self.iterable = list(iterable)
 
-    def append(self,item):
+    def append(self, item):
         self.iterable.append(item)
 
     def __setitem__(self, key, value):
@@ -225,10 +229,13 @@ class CyclicList:
     def pop(self, key=-1):
         return self.iterable.pop(key)
 
+
 ###__6.2.13__###
 from copy import deepcopy
+
+
 class SequenceZip:
-    def __init__(self,*items):
+    def __init__(self, *items):
         self.items = deepcopy(items)
         self.len = len(items)
         if self.items:
@@ -238,7 +245,7 @@ class SequenceZip:
 
     @staticmethod
     def zip_zip(iterable, key):
-            return tuple(j[key] for j in iterable)
+        return tuple(j[key] for j in iterable)
 
     def __iter__(self):
         for i in range(self.min_len):
@@ -255,12 +262,12 @@ class SequenceZip:
 
 class OrderedSet:
     def __init__(self, iterable=[]):
-        self.iterable ={i:None for i in iterable}
+        self.iterable = {i: None for i in iterable}
 
-    def add(self,key):
+    def add(self, key):
         self.iterable[key] = None
 
-    def discard(self,key):
+    def discard(self, key):
         if key in self.iterable:
             self.iterable.pop(key)
 
@@ -270,18 +277,21 @@ class OrderedSet:
     def __iter__(self):
         yield from list(self.iterable.keys())
 
-    def __eq__(self,other):
-        if isinstance(other,OrderedSet):
+    def __eq__(self, other):
+        if isinstance(other, OrderedSet):
             return tuple(self.iterable.keys()) == tuple(other.iterable.keys())
-        elif isinstance(other,set):
+        elif isinstance(other, set):
             return sorted(self.iterable) == sorted(other)
         else:
             return NotImplemented
 
+
 ###__6.2.15__###
 import copy
+
+
 class AttrDict:
-    def __init__(self, data: dict ={}):
+    def __init__(self, data: dict = {}):
         self.__dict__.update(copy.deepcopy(data))
         self.data = copy.deepcopy(data)
 
@@ -291,24 +301,22 @@ class AttrDict:
     def __iter__(self):
         yield from self.data
 
-
-    def __getitem__(self,key):
+    def __getitem__(self, key):
         return self.data[key]
 
-    def __setitem__(self,key,value):
+    def __setitem__(self, key, value):
         self.data[key] = value
-        setattr(self,key,value)
-
-
+        setattr(self, key, value)
 
 
 ###__6.2.16__###
 import copy
 
+
 class PermaDict:
-    def __init__(self, data:dict = {}):
+    def __init__(self, data: dict = {}):
         self.data = copy.deepcopy(data)
-        self.extradata={}
+        self.extradata = {}
 
     def keys(self):
         return list(self.data.keys()) + list(self.extradata.keys())
@@ -317,12 +325,13 @@ class PermaDict:
         return list(self.data.values()) + list(self.extradata.values())
 
     def items(self):
-        return [(key, value) for key, value in self.data.items()] + [(key, value) for key, value in self.extradata.items()]
+        return [(key, value) for key, value in self.data.items()] + [(key, value) for key, value in
+                                                                     self.extradata.items()]
 
     def __len__(self):
-        return len(self.data)+len(self.extradata)
+        return len(self.data) + len(self.extradata)
 
-    def __getitem__(self,key):
+    def __getitem__(self, key):
         if key in self.data:
             return self.data[key]
         else:
@@ -333,7 +342,7 @@ class PermaDict:
 
     def __delitem__(self, key):
 
-         if key in self.extradata:
+        if key in self.extradata:
             self.extradata.pop(key)
 
     def __setitem__(self, key, value):
@@ -344,10 +353,12 @@ class PermaDict:
 
 ###__6.2.17__###
 import copy
+
+
 class HistoryDict:
 
     def __init__(self, data={}):
-        self.data = {key:[value] for key, value in copy.deepcopy(data).items()}
+        self.data = {key: [value] for key, value in copy.deepcopy(data).items()}
 
     def keys(self):
         return list(self.data.keys()) if self.data else ""
@@ -371,7 +382,7 @@ class HistoryDict:
             self.data[item] = [value]
 
     def __len__(self):
-        return len(list(filter(lambda x: x[-1] !=None, self.data.values())))
+        return len(list(filter(lambda x: x[-1] != None, self.data.values())))
 
     def __iter__(self):
         yield from [i for i in self.data.keys()]
@@ -384,12 +395,15 @@ class HistoryDict:
             return self.data[key]
         else:
             return []
+
     def all_history(self):
-        return {key:value for key,value in self.data.items()}
+        return {key: value for key, value in self.data.items()}
 
 
 ###__6.2.18__###
 import copy
+
+
 class MutableString:
 
     def __init__(self, string: str = ""):
@@ -405,7 +419,7 @@ class MutableString:
         return len(self.string)
 
     def lower(self):
-        self.string =  self.string.lower()
+        self.string = self.string.lower()
 
     def upper(self):
         self.string = self.string.upper()
@@ -414,7 +428,7 @@ class MutableString:
         yield from list(self.string)
 
     def __add__(self, other):
-        if isinstance(other,MutableString):
+        if isinstance(other, MutableString):
             return MutableString(self.string + other.string)
 
     def __setitem__(self, key, value):
@@ -436,10 +450,9 @@ class MutableString:
             temp = list(self.string)
             del temp[key]
             self.string = "".join(temp)
-        if isinstance(key,int):
+        if isinstance(key, int):
             temp = list(self.string)
-            self.string = "".join(temp[:key] + temp[key+1:])
-
+            self.string = "".join(temp[:key] + temp[key + 1:])
 
 
 ###__6.2.18__###
@@ -447,7 +460,7 @@ class MutableString:
 class Grouper:
 
     def __init__(self, iteable, key):
-        self.groups ={}
+        self.groups = {}
         self.key = key
         for item in copy.deepcopy(iteable):
             if key(item) in self.groups:
@@ -479,7 +492,7 @@ class Grouper:
 
 ###__6.3.13__###
 
-def print_file_content(filename:str):
+def print_file_content(filename: str):
     try:
         f = open(filename, "r", encoding='utf-8')
         with f:
@@ -489,26 +502,28 @@ def print_file_content(filename:str):
                 string = f.read()
 
     except:
-        print ("Файл не найден")
+        print("Файл не найден")
+
 
 ###__6.3.14__###
 
-def non_closed_files(files:list):
+def non_closed_files(files: list):
     return list(filter(lambda x: not x.closed, files))
+
 
 ###__6.3.15__###
 
-def log_for(logfile:str, date_str:str):
-
-    with open(logfile, "r", encoding='utf-8') as input_file,\
-         open(f"log_for_{date_str}.txt", "w", encoding='utf-8') as output_file:
-         string = input_file.readline()
-         while string:
-             date =string[:10]
-             info = string[11:]
-             if date == date_str:
+def log_for(logfile: str, date_str: str):
+    with open(logfile, "r", encoding='utf-8') as input_file, \
+            open(f"log_for_{date_str}.txt", "w", encoding='utf-8') as output_file:
+        string = input_file.readline()
+        while string:
+            date = string[:10]
+            info = string[11:]
+            if date == date_str:
                 output_file.write(f'{info}')
-             string = input_file.readline()
+            string = input_file.readline()
+
 
 ###__6.4.21__###
 
@@ -526,10 +541,11 @@ class SuppressAll:
     def __exit__(self, *args, **kwargs):
         return True
 
+
 ###__6.5.6__###
 
 class Greeter:
-    def __init__(self, name:str):
+    def __init__(self, name: str):
         self.name = name
 
     def __enter__(self):
@@ -539,6 +555,7 @@ class Greeter:
     def __exit__(self, *args, **kwargs):
         print(f"До встречи, {self.name}!")
         return True
+
 
 ###__6.5.7__###
 
@@ -558,29 +575,51 @@ class Closer:
             print("Незакрываемый объект")
             return True
 
+
 ###__6.5.8__###
 
 class ReadableTextFile:
-    def __init__(self,filename:str):
+    def __init__(self, filename: str):
         self.filename = filename
 
     def __enter__(self):
-        self.file= open(self.filename, mode='r', encoding='utf-8')
-        return self.file
+        self.file = open(self.filename, mode='r', encoding='utf-8')
+        self.text = [x[:-1] if '\n' in x else x for x in self.file.readlines()]
+        return self.text
 
-    def __exit__(self,*args, **kwargs):
-        pass
-
-
-
+    def __exit__(self, *args, **kwargs):
+        self.file.close()
 
 
+###__6.5.9__###
+
+class Reloopable:
+    def __init__(self, file):
+        self.file = file
+
+    def __enter__(self):
+        self.text = self.file.readlines()
+        return self.text
+
+    def __exit__(self, *args, **kwargs):
+        self.file.close()
 
 
+###__6.5.10__###
+import sys
 
 
+class UpperPrint:
 
+    def __enter__(self):
+        self.original_write = sys.stdout.write
+        sys.stdout.write = self.upper
 
+    def upper(self, text):
+        self.original_write(text.upper())
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        sys.stdout.write = self.original_write
 
 
 
