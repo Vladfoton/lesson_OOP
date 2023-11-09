@@ -622,4 +622,37 @@ class UpperPrint:
         sys.stdout.write = self.original_write
 
 
+###__6.5.11__###
 
+class Suppress:
+    def __init__(self, *args):
+        self.exception_list = args
+        self.exception = None
+
+    # def __repr__(self):
+    #     return self.exception
+
+
+    def __enter__(self):
+        return self.exception
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+            # print("*",exc_type,"**", exc_val,"***",exc_tb, sep = "\n")
+            if exc_type in self.exception_list:
+                # print(exc_val, type(exc_val))
+                self.exception = exc_val
+                return True
+
+            else:
+                self.exception = None
+                return False
+
+
+
+
+if __name__ == '__main__':
+    with Suppress(TypeError, ValueError) as context:
+        number = int('я число')
+
+    print(context.exception)
+    print(type(context.exception))
