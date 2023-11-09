@@ -643,6 +643,35 @@ class Suppress:
             return False
 
 
+###__6.5.12__###  ##SPICE##
+
+class WriteSpy:
+    def __init__(self,file1, file2, to_close:bool=False):
+        self.to_close = to_close
+        self.file_name2 = file2
+        self.file_name1 = file1
+
+    def __enter__(self):
+        self.file1 = open(self.filename, mode='w', encoding='utf-8')
+        self.file2 = open(self.filename, mode='w', encoding='utf-8')
+        return self
+
+    def write(self,text):
+        self.file1.write(text)
+        self.file2.write(text)
+
+    def close(self):
+        self.file1.close()
+        self.file2.close()
+
+    def writable(self):
+        return self.file1.writable() and self.file2.writable()
+
+    def closed(self):
+        return self.file1.close() and self.file2.close()
+
+
+
 if __name__ == '__main__':
     with Suppress() as context:
         print('All success!')
