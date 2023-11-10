@@ -681,10 +681,25 @@ class WriteSpy:
         return self.file1.closed and self.file2.closed
 
 
-if __name__ == '__main__':
-    f1 = open('file1.txt', mode='w')
-    f2 = open('file2.txt', mode='w')
-    f1.close()
+###__6.5.13__###  ##SPICE##
+import copy
+class Atomic:
+    def __init__(self, data, deep:bool = False):
+        self.deep = deep
+        self.data = data
+        self.data_copy = copy.deepcopy(data) if deep else copy.copy(data)
 
-    with WriteSpy(f1, f2, to_close=True) as combined:
-        print(combined.writable())
+    def __enter__(self):
+        return self.data_copy
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if not exc_type:
+            if isinstance(self.data, list):
+                self.data[:] = self.data_copy
+
+            elif isinstance(self.data,set|dict):
+                self.data.clear()
+                self.data.update(self.data_copy)
+            return False
+        return True
+
