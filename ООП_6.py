@@ -648,13 +648,17 @@ class Suppress:
 class WriteSpy:
     def __init__(self,file1, file2, to_close:bool=False):
         self.to_close = to_close
-        self.file_name2 = file2
-        self.file_name1 = file1
+        self.file2 = file2
+        self.file1 = file1
 
     def __enter__(self):
-        self.file1 = open(self.filename, mode='w', encoding='utf-8')
-        self.file2 = open(self.filename, mode='w', encoding='utf-8')
         return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.file1.close()
+        self.file2.close()
+
+
 
     def write(self,text):
         self.file1.write(text)
@@ -668,12 +672,17 @@ class WriteSpy:
         return self.file1.writable() and self.file2.writable()
 
     def closed(self):
-        return self.file1.close() and self.file2.close()
+        return self.file1. and self.file2.close()
 
 
 
 if __name__ == '__main__':
-    with Suppress() as context:
-        print('All success!')
+    f1 = open('file1.txt', mode='w')
+    f2 = open('file2.txt', mode='w')
 
-    print(context.exception)
+    with WriteSpy(f1, f2, to_close=True) as combined:
+        print(combined.closed())
+        f1.close()
+        print(combined.closed())
+        f2.close()
+        print(combined.closed())
