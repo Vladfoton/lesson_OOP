@@ -683,8 +683,10 @@ class WriteSpy:
 
 ###__6.5.13__###  ##SPICE##
 import copy
+
+
 class Atomic:
-    def __init__(self, data, deep:bool = False):
+    def __init__(self, data, deep: bool = False):
         self.deep = deep
         self.data = data
         self.data_copy = copy.deepcopy(data) if deep else copy.copy(data)
@@ -697,9 +699,41 @@ class Atomic:
             if isinstance(self.data, list):
                 self.data[:] = self.data_copy
 
-            elif isinstance(self.data,set|dict):
+            elif isinstance(self.data, set | dict):
                 self.data.clear()
                 self.data.update(self.data_copy)
             return False
         return True
+
+
+###__6.5.16__###
+from time import perf_counter
+
+
+class AdvancedTimer:
+    def __init__(self):
+        self.runs = []
+        self.min = None
+        self.max = None
+        self.last_run = None
+
+    def __enter__(self):
+        self.start = perf_counter()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.elapsed = perf_counter() - self.start
+        self.last_run = self.elapsed
+        self.runs.append(self.elapsed)
+        if self.min:
+            if self.elapsed < self.min:
+                self.min = self.elapsed
+        else:
+            self.min = self.elapsed
+        if self.max:
+            if self.elapsed > self.max:
+                self.max = self.elapsed
+        else:
+            self.max = self.elapsed
+
 
