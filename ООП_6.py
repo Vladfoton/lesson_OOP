@@ -646,7 +646,7 @@ class Suppress:
 ###__6.5.12__###  ##SPICE##
 
 class WriteSpy:
-    def __init__(self,file1, file2, to_close:bool=False):
+    def __init__(self, file1, file2, to_close: bool = False):
         self.to_close = to_close
         self.file2 = file2
         self.file1 = file1
@@ -655,35 +655,38 @@ class WriteSpy:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.file1.close()
-        self.file2.close()
+        if self.to_close:
+            self.close()
 
-
-
-    def write(self,text):
-        self.file1.write(text)
-        self.file2.write(text)
+    def write(self, text):
+        if self.file1.closed or self.file2.closed or not self.file1.writable or self.file2.writable:
+            raise ValueError('Файл закрыт или недоступен для записи')
+        else:
+            self.file1.write(text)
+            self.file2.write(text)
 
     def close(self):
-        self.file1.close()
-        self.file2.close()
+        if not self.file1.closed:
+            self.file1.close()
+        if not self.file2.closed:
+            self.file2.close()
 
     def writable(self):
-        return self.file1.writable() and self.file2.writable()
+        if not self.closed():
+            return self.file1.writable and self.file2.writable
+        else:
+            return False
 
     def closed(self):
-        return self.file1. and self.file2.close()
-
-
+        return self.file1.closed and self.file2.closed
 
 
 if __name__ == '__main__':
-    f1 = open('file1.txt', mode='w')
+    f1 = open('file1.txt', mode='r')
     f2 = open('file2.txt', mode='w')
 
-    with WriteSpy(f1, f2, to_close=True) as combined:
-        print(combined.closed())
-        f1.close()
-        print(combined.closed())
-        f2.close()
-        print(combined.closed())
+    try:
+        with WriteSpy(f1, f2, to_close=True) as combined:
+            combined.write('No cost too great')
+    except ValueError as error:
+        print(error)
