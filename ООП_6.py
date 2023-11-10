@@ -659,7 +659,7 @@ class WriteSpy:
             self.close()
 
     def write(self, text):
-        if self.file1.closed or self.file2.closed or not self.file1.writable or self.file2.writable:
+        if self.file1.closed or self.file2.closed or not self.file1.writable() or not self.file2.writable():
             raise ValueError('Файл закрыт или недоступен для записи')
         else:
             self.file1.write(text)
@@ -672,8 +672,8 @@ class WriteSpy:
             self.file2.close()
 
     def writable(self):
-        if not self.closed():
-            return self.file1.writable and self.file2.writable
+        if not self.file1.closed and not self.file2.closed:
+            return self.file1.writable() and self.file2.writable()
         else:
             return False
 
@@ -682,11 +682,9 @@ class WriteSpy:
 
 
 if __name__ == '__main__':
-    f1 = open('file1.txt', mode='r')
+    f1 = open('file1.txt', mode='w')
     f2 = open('file2.txt', mode='w')
+    f1.close()
 
-    try:
-        with WriteSpy(f1, f2, to_close=True) as combined:
-            combined.write('No cost too great')
-    except ValueError as error:
-        print(error)
+    with WriteSpy(f1, f2, to_close=True) as combined:
+        print(combined.writable())
