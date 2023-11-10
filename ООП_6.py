@@ -676,6 +676,7 @@ class WriteSpy:
 
 
 
+
 if __name__ == '__main__':
     f1 = open('file1.txt', mode='w')
     f2 = open('file2.txt', mode='w')
