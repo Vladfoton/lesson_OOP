@@ -797,21 +797,3 @@ class TreeBuilder:
             self.tree_structure[self.current_level].append(temp)
 
 
-if __name__ == '__main__':
-    tree = TreeBuilder()
-
-    tree.add('1st')
-
-    with tree:
-        tree.add('2nd')
-        with tree:
-            tree.add('3rd')
-            with tree:
-                tree.add('4th')
-                with tree:
-                    tree.add('5th')
-        with tree:
-            pass
-
-    tree.add('6th')
-    print(tree.structure())
