@@ -809,4 +809,14 @@ def make_tag(tag):
     print(tag)
 
 
+###__6.6.18__###
 
+from contextlib import contextmanager
+
+
+@contextmanager
+def reversed_print():
+    standart_output = sys.stdout.write
+    sys.stdout.write = lambda x: standart_output(x[::-1])
+    yield
+    sys.stdout.write = standart_output
