@@ -797,3 +797,16 @@ class TreeBuilder:
             self.tree_structure[self.current_level].append(temp)
 
 
+###__6.6.17__###
+
+from contextlib import contextmanager
+
+
+@contextmanager
+def make_tag(tag):
+    print(tag)
+    yield
+    print(tag)
+
+
+
