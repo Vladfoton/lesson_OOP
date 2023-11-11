@@ -737,7 +737,7 @@ class AdvancedTimer:
             self.max = self.elapsed
 
 
-###__6.5.17__###
+###__6.5.17__### ___##SPICE##
 class HtmlTag:
     indent = -1
 
@@ -771,3 +771,44 @@ class HtmlTag:
         self.__class__.indent -= 1
 
 
+###__6.5.18__### ___##SPICE##______##SPICE##__!!!!
+
+class TreeBuilder:
+    current_level = 0
+    tree_structure = {current_level: []}
+
+    def __enter__(self):
+        self.__class__.current_level += 1
+        self.__class__.tree_structure.setdefault(self.__class__.current_level, [])
+        return self
+
+    def add(self, obj):
+        self.__class__.tree_structure[self.__class__.current_level].append(obj)
+
+    def structure(self):
+        return self.__class__.tree_structure[0] if self.__class__.tree_structure else []
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        temp = self.__class__.tree_structure[self.__class__.current_level]
+        self.__class__.tree_structure.pop(self.__class__.current_level)
+        self.__class__.current_level -= 1
+        if temp:
+            self.__class__.tree_structure[self.__class__.current_level].append(temp)
+
+
+if __name__ == '__main__':
+    tree1 = TreeBuilder()
+    tree2 = TreeBuilder()
+
+    tree1.add('1st')
+
+    with tree1:
+        tree1.add('2nd')
+        with tree1:
+            tree1.add('3rd')
+        tree1.add('4th')
+        with tree1:
+            pass
+
+    print(tree1.structure())
+    print(tree2.structure())
