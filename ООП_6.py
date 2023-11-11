@@ -774,41 +774,44 @@ class HtmlTag:
 ###__6.5.18__### ___##SPICE##______##SPICE##__!!!!
 
 class TreeBuilder:
-    current_level = 0
-    tree_structure = {current_level: []}
+    def __init__(self):
+        self.current_level = 0
+        self.tree_structure = {self.current_level: []}
 
     def __enter__(self):
-        self.__class__.current_level += 1
-        self.__class__.tree_structure.setdefault(self.__class__.current_level, [])
+        self.current_level += 1
+        self.tree_structure.setdefault(self.current_level, [])
         return self
 
     def add(self, obj):
-        self.__class__.tree_structure[self.__class__.current_level].append(obj)
+        self.tree_structure[self.current_level].append(obj)
 
     def structure(self):
-        return self.__class__.tree_structure[0] if self.__class__.tree_structure else []
+        return self.tree_structure[0] if self.tree_structure else []
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        temp = self.__class__.tree_structure[self.__class__.current_level]
-        self.__class__.tree_structure.pop(self.__class__.current_level)
-        self.__class__.current_level -= 1
+        temp = self.tree_structure[self.current_level]
+        self.tree_structure.pop(self.current_level)
+        self.current_level -= 1
         if temp:
-            self.__class__.tree_structure[self.__class__.current_level].append(temp)
+            self.tree_structure[self.current_level].append(temp)
 
 
 if __name__ == '__main__':
-    tree1 = TreeBuilder()
-    tree2 = TreeBuilder()
+    tree = TreeBuilder()
 
-    tree1.add('1st')
+    tree.add('1st')
 
-    with tree1:
-        tree1.add('2nd')
-        with tree1:
-            tree1.add('3rd')
-        tree1.add('4th')
-        with tree1:
+    with tree:
+        tree.add('2nd')
+        with tree:
+            tree.add('3rd')
+            with tree:
+                tree.add('4th')
+                with tree:
+                    tree.add('5th')
+        with tree:
             pass
 
-    print(tree1.structure())
-    print(tree2.structure())
+    tree.add('6th')
+    print(tree.structure())
