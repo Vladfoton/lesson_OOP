@@ -845,16 +845,34 @@ def safe_write(filename: str):
 
     except Exception as err:
         print(f'Во время записи в файл было возбуждено исключение {err.__class__.__name__}')
-        file.close()  #Файл закрываем
-        file = open(filename, 'w') #Файл открываем с одновременным удалением содержимого
+        file.close()  # Файл закрываем
+        file = open(filename, 'w')  # Файл открываем с одновременным удалением содержимого
         file.write(tempdata)
     finally:
         file.close()
 
 
-if __name__ == '__main__':
-    with safe_write('undertale.txt') as file:
-        file.write('Тень от руин нависает над вами, наполняя вас решительностью')
+###__6.6.20__###
+from contextlib import contextmanager
 
-    with open('undertale.txt') as file:
-        print(file.read())
+
+@contextmanager
+def safe_open(filename: str, mode: str = 'r'):
+    file = None
+    try:
+        file = open(filename, mode)
+        yield (file, None)
+    except Exception as err:
+        yield (None, err)
+
+    finally:
+        if file:
+            file.close()
+        return True
+
+
+if __name__ == '__main__':
+    with safe_open('Ellies_jokes_2.txt') as file:
+        file, error = file
+        print(file)
+        print(error)
