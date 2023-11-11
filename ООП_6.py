@@ -774,41 +774,105 @@ class HtmlTag:
 ###__6.5.18__### ___##SPICE##______##SPICE##__!!!!
 
 class TreeBuilder:
-    current_level = 0
-    tree_structure = {current_level: []}
+    def __init__(self):
+        self.current_level = 0
+        self.tree_structure = {self.current_level: []}
 
     def __enter__(self):
-        self.__class__.current_level += 1
-        self.__class__.tree_structure.setdefault(self.__class__.current_level, [])
+        self.current_level += 1
+        self.tree_structure.setdefault(self.current_level, [])
         return self
 
     def add(self, obj):
-        self.__class__.tree_structure[self.__class__.current_level].append(obj)
+        self.tree_structure[self.current_level].append(obj)
 
     def structure(self):
-        return self.__class__.tree_structure[0] if self.__class__.tree_structure else []
+        return self.tree_structure[0] if self.tree_structure else []
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        temp = self.__class__.tree_structure[self.__class__.current_level]
-        self.__class__.tree_structure.pop(self.__class__.current_level)
-        self.__class__.current_level -= 1
+        temp = self.tree_structure[self.current_level]
+        self.tree_structure.pop(self.current_level)
+        self.current_level -= 1
         if temp:
-            self.__class__.tree_structure[self.__class__.current_level].append(temp)
+            self.tree_structure[self.current_level].append(temp)
+
+
+###__6.6.17__###
+
+from contextlib import contextmanager
+
+
+@contextmanager
+def make_tag(tag):
+    print(tag)
+    yield
+    print(tag)
+
+
+###__6.6.18__###
+
+from contextlib import contextmanager
+
+
+@contextmanager
+def reversed_print():
+    standart_output = sys.stdout.write
+    sys.stdout.write = lambda x: standart_output(x[::-1])
+    yield
+    sys.stdout.write = standart_output
+
+
+###__6.6.19__###
+from contextlib import contextmanager
+
+
+@contextmanager
+def safe_write(filename: str):
+    tempdata = ''
+
+    # Считываем содержимое файла если в нем есть данные
+    try:
+        file = open(filename, 'r')
+        tempdata = file.read()
+        file.close()
+    except Exception:
+        pass
+
+    # Открываем файл для записи
+    try:
+        file = open(filename, 'w')
+        yield file  #
+
+    except Exception as err:
+        print(f'Во время записи в файл было возбуждено исключение {err.__class__.__name__}')
+        file.close()  # Файл закрываем
+        file = open(filename, 'w')  # Файл открываем с одновременным удалением содержимого
+        file.write(tempdata)
+    finally:
+        file.close()
+
+
+###__6.6.20__###
+from contextlib import contextmanager
+
+
+@contextmanager
+def safe_open(filename: str, mode: str = 'r'):
+    file = None
+    try:
+        file = open(filename, mode)
+        yield (file, None)
+    except Exception as err:
+        yield (None, err)
+
+    finally:
+        if file:
+            file.close()
+        return True
 
 
 if __name__ == '__main__':
-    tree1 = TreeBuilder()
-    tree2 = TreeBuilder()
-
-    tree1.add('1st')
-
-    with tree1:
-        tree1.add('2nd')
-        with tree1:
-            tree1.add('3rd')
-        tree1.add('4th')
-        with tree1:
-            pass
-
-    print(tree1.structure())
-    print(tree2.structure())
+    with safe_open('Ellies_jokes_2.txt') as file:
+        file, error = file
+        print(file)
+        print(error)
