@@ -737,3 +737,37 @@ class AdvancedTimer:
             self.max = self.elapsed
 
 
+###__6.5.17__###
+class HtmlTag:
+    indent = -1
+
+    def __init__(self, tag: str, inline: bool = False):
+        self.inline = inline
+        self.tag = tag
+
+    def __enter__(self):
+        self.__class__.indent += 1
+        if self.inline:
+            print(f'{"  " * self.__class__.indent}<{self.tag}>', end='')
+        else:
+            print(f'{"  " * (self.__class__.indent)}<{self.tag}>')
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+
+        if self.inline:
+            print(f'</{self.tag}>')
+        else:
+            print(f'{"  " * (self.__class__.indent)}</{self.tag}>')
+        self.__class__.indent -= 1
+        return True
+
+    def print(self, text: str):
+        self.__class__.indent += 1
+        if self.inline:
+            print(f'{text}', end='')
+        else:
+            print(f'{"  " * self.__class__.indent}{text}')
+        self.__class__.indent -= 1
+
+
