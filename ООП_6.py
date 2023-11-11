@@ -820,3 +820,41 @@ def reversed_print():
     sys.stdout.write = lambda x: standart_output(x[::-1])
     yield
     sys.stdout.write = standart_output
+
+
+###__6.6.19__###
+from contextlib import contextmanager
+
+
+@contextmanager
+def safe_write(filename: str):
+    tempdata = ''
+
+    # Считываем содержимое файла если в нем есть данные
+    try:
+        file = open(filename, 'r')
+        tempdata = file.read()
+        file.close()
+    except Exception:
+        pass
+
+    # Открываем файл для записи
+    try:
+        file = open(filename, 'w')
+        yield file  #
+
+    except Exception as err:
+        print(f'Во время записи в файл было возбуждено исключение {err.__class__.__name__}')
+        file.close()  #Файл закрываем
+        file = open(filename, 'w') #Файл открываем с одновременным удалением содержимого
+        file.write(tempdata)
+    finally:
+        file.close()
+
+
+if __name__ == '__main__':
+    with safe_write('undertale.txt') as file:
+        file.write('Тень от руин нависает над вами, наполняя вас решительностью')
+
+    with open('undertale.txt') as file:
+        print(file.read())
