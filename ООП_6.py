@@ -944,27 +944,22 @@ class LimitedTakes():
         else:
             raise AttributeError('Атрибут не найден')
 
-        if self.curr_times <= self.times:
-            self.curr_times+=1
-            return obj.__dict__[self.name]
-        else:
-            raise MaxCallsException("Превышено количество доступных обращений")
 
-
-
-
-
-
-class Programmer:
-    name = LimitedTakes(1)
+class Student:
+    name = LimitedTakes(3)
 
 if __name__ == '__main__':
 
-    programmer = Programmer()
+    student = Student()
+    student.name = 'Gwen'
+
+    print(student.name)
+    print(student.name)
+    print(student.name)
 
     try:
-        print(programmer.name)
-    except AttributeError as e:
+        print(student.name)
+    except MaxCallsException as e:
         print(e)
 
 
