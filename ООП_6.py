@@ -913,17 +913,58 @@ class NonNegativeInteger():
             return self.default
 
 
+###__6.8.17__###
+
+class MaxCallsException(Exception):
+    def __init__(self, error_message):
+        self.error_message = error_message
+    def str(self):
+        return self.error_message
 
 
-class Student:
-    score = NonNegativeInteger('score')
+class LimitedTakes():
+    def __set_name__(self, owner, name):
+        self.name = name
 
+    def __init__(self, times):
+        self.times = times
+        self.curr_times =1
+    def __set__(self, obj, value):
+        obj.__dict__[self.name] = value
+
+    def __get__(self, obj, cls):
+        if obj is None:  # проверка на то, как осуществляется обращение
+            return self
+        if self.name in obj.__dict__:
+            if self.curr_times <= self.times:
+                self.curr_times += 1
+                return obj.__dict__[self.name]
+            else:
+                raise MaxCallsException("Превышено количество доступных обращений")
+        else:
+            raise AttributeError('Атрибут не найден')
+
+        if self.curr_times <= self.times:
+            self.curr_times+=1
+            return obj.__dict__[self.name]
+        else:
+            raise MaxCallsException("Превышено количество доступных обращений")
+
+
+
+
+
+
+class Programmer:
+    name = LimitedTakes(1)
 
 if __name__ == '__main__':
-    student = Student()
+
+    programmer = Programmer()
 
     try:
-        student.score = -90
-    except ValueError as e:
+        print(programmer.name)
+    except AttributeError as e:
         print(e)
+
 
