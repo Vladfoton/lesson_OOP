@@ -870,11 +870,36 @@ def safe_open(filename: str, mode: str = 'r'):
             file.close()
         return True
 
+###__6.8.15__###
+from keyword import kwlist
+class NonKeyword():
+    def __init__(self,atrr):
+        self._attr = atrr
+    def __set__(self, obj, value):
+        if value not in kwlist:
+            obj.__dict__[self._attr] = value
+        else:
+            raise ValueError('Некорректное значение')
+
+    def __get__(self, obj, cls):
+        if obj is None:  # проверка на то, как осуществляется обращение
+            return self
+        if self._attr in obj.__dict__:
+            return obj.__dict__[self._attr]
+        else:
+            raise AttributeError('Атрибут не найден')
+
+class Student:
+    name = NonKeyword('name')
+
 
 if __name__ == '__main__':
-    with safe_open('Ellies_jokes_2.txt') as file:
-        file, error = file
-        print(file)
-        print(error)
 
+    student = Student()
+    student.name = 'Peter'
+
+    try:
+        student.name = 'class'
+    except ValueError as e:
+        print(e)
 
