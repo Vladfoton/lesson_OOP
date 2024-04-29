@@ -843,7 +843,7 @@ def safe_write(filename: str):
         file = open(filename, 'w')
         yield file  #
 
-    except Exception as err:
+    except Exception as err: # Если произошла ошибка сохраняем исходный файл
         print(f'Во время записи в файл было возбуждено исключение {err.__class__.__name__}')
         file.close()  # Файл закрываем
         file = open(filename, 'w')  # Файл открываем с одновременным удалением содержимого
@@ -876,3 +876,5 @@ if __name__ == '__main__':
         file, error = file
         print(file)
         print(error)
+
+
