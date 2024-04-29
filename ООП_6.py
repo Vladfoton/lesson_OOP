@@ -916,10 +916,7 @@ class NonNegativeInteger():
 ###__6.8.17__###
 
 class MaxCallsException(Exception):
-    def __init__(self, error_message):
-        self.error_message = error_message
-    def str(self):
-        return self.error_message
+    pass
 
 
 class LimitedTakes():
@@ -944,22 +941,41 @@ class LimitedTakes():
         else:
             raise AttributeError('Атрибут не найден')
 
+###__6.8.18__###
+
+class TypeChecked():
+
+    def __set_name__(self, owner, name):
+        self.name = name
+    def __init__(self, *typenames):
+        self.typenames = typenames
+
+    def __set__(self, instance, value):
+        if isinstance(value, self.typenames):
+            instance.__dict__[self.name] = value
+        else:
+            raise TypeError('Некорректное значение')
+
+    def __get__(self, instance, owner):
+        if instance is None:  # проверка на то, как осуществляется обращение
+            return self
+        if self.name in instance.__dict__:
+            return instance.__dict__[self.name]
+        else:
+            raise AttributeError('Атрибут не найден')
+
 
 class Student:
-    name = LimitedTakes(3)
+    age = TypeChecked(int, float)
 
 if __name__ == '__main__':
-
     student = Student()
-    student.name = 'Gwen'
 
-    print(student.name)
-    print(student.name)
-    print(student.name)
+    student.age = 18
+    print(student.age)
 
-    try:
-        print(student.name)
-    except MaxCallsException as e:
-        print(e)
+    student.age = 18.5
+    print(student.age)
+
 
 
