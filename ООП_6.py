@@ -889,17 +889,41 @@ class NonKeyword():
         else:
             raise AttributeError('Атрибут не найден')
 
+
+###__6.8.16__###
+class NonNegativeInteger():
+    def __init__(self, name, default=None):
+        self.name = name
+        self. default = default
+
+    def __set__(self, obj, value=None):
+        if isinstance(value, int) and value >= 0:
+            obj.__dict__[self.name] = value
+        else:
+            raise ValueError('Некорректное значение')
+
+    def __get__(self,obj, cls):
+        if obj is None:  # проверка на то, как осуществляется обращение
+            return self
+        if self.name in obj.__dict__:
+            return obj.__dict__[self.name]
+        else:
+            if self.default == None:
+                raise AttributeError('Атрибут не найден')
+            return self.default
+
+
+
+
 class Student:
-    name = NonKeyword('name')
+    score = NonNegativeInteger('score')
 
 
 if __name__ == '__main__':
-
     student = Student()
-    student.name = 'Peter'
 
     try:
-        student.name = 'class'
+        student.score = -90
     except ValueError as e:
         print(e)
 
