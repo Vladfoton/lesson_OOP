@@ -964,18 +964,42 @@ class TypeChecked():
         else:
             raise AttributeError('Атрибут не найден')
 
+###__6.8.19__###
 
-class Student:
-    age = TypeChecked(int, float)
+from random import randint
+
+class RandomNumber():
+    def __init__(self, start:int, end: int, cache =False):
+        self.start = start
+        self.end = end
+        self.data = randint(self.start, self.end)
+        self.cache = cache
+    def __set__(self, instance, value):
+        raise AttributeError('Изменение невозможно')
+
+    def __get__(self, instance, owner):
+        if instance is None:  # проверка на то, как осуществляется обращение
+            return self
+        if self.cache:
+            return self.data
+        else:
+            return randint(self.start, self.end)
+
+
+
+class MagicPoint:
+    x = RandomNumber(0, 5, True)
+    y = RandomNumber(0, 5)
+    z = RandomNumber(0, 5)
 
 if __name__ == '__main__':
-    student = Student()
+    magicpoint = MagicPoint()
+    value = magicpoint.x
 
-    student.age = 18
-    print(student.age)
-
-    student.age = 18.5
-    print(student.age)
+    print(magicpoint.x in [0, 1, 2, 3, 4, 5])
+    print(magicpoint.x == value)
+    print(magicpoint.x == value)
+    print(magicpoint.x == value)
 
 
 
