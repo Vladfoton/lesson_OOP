@@ -986,20 +986,70 @@ class RandomNumber():
             return randint(self.start, self.end)
 
 
+###__6.8.20__###
 
-class MagicPoint:
-    x = RandomNumber(0, 5, True)
-    y = RandomNumber(0, 5)
-    z = RandomNumber(0, 5)
+class Versioned():
+    def __init__(self):
+        # print("Запуск __init__")
+        # print(self)
+        self.current_num = -1
+    def __set_name__(self, cls, attr):
+
+        # print("Запуск __set_name__")
+        # print(self, cls, attr)
+        self._attr = attr
+
+    def __get__(self, obj, cls):
+        # print("Запуск __get__")
+        # print(self, obj, cls)
+        if obj is None:                    # проверка на то, как осуществляется обращение
+            return self
+        if self._attr in obj.__dict__:
+            return obj.__dict__[self._attr][obj.current_num]
+        else:
+            raise AttributeError('Атрибут не найден')
+
+    def __set__(self, obj, value):
+        # print("Запуск __set__")
+        # print("*",self, obj, value)
+        # print("**",obj.__class__.__dict__ , obj.__dict__)
+        if self._attr in obj.__class__.__dict__:
+            if self._attr in obj.__dict__:
+                obj.__dict__[self._attr].append(value)
+            else:
+                obj.current_num = -1
+                obj.__dict__[self._attr]=[value]
+
+    def get_version(self,obj, num):
+        # print("Запуск get_version")
+        # print(self, obj, num)
+
+        if obj is None:                    # проверка на то, как осуществляется обращение
+            return self
+        if self._attr in obj.__dict__:
+            return obj.__dict__[self._attr][num-1]
+        else:
+            raise AttributeError('Атрибута не найден')
+
+    def set_version(self,obj,num):
+        obj.current_num = num-1
+
+
+
+
+
+
 
 if __name__ == '__main__':
-    magicpoint = MagicPoint()
-    value = magicpoint.x
+    class Student:
+        name = Versioned()
 
-    print(magicpoint.x in [0, 1, 2, 3, 4, 5])
-    print(magicpoint.x == value)
-    print(magicpoint.x == value)
-    print(magicpoint.x == value)
 
+    student = Student()
+
+    try:
+        print(student.name)
+    except AttributeError as e:
+        print(e)
 
 
